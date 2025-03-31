@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: emqx
+  labels:
+    app: emqx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: emqx
+  template:
+    metadata:
+      labels:
+        app: emqx
+    spec:
+      containers:
+        - name: emqx
+          image: emqx/emqx:latest
+          env:
+            - name: EMQX_LISTENER__TCP__EXTERNAL
+              value: "1884"  # Updated MQTT Port
+            - name: EMQX_LISTENER__SSL__EXTERNAL
+              value: "8884"  # Updated Secure MQTT Port
+          ports:
+            - containerPort: 1884
+            - containerPort: 8884
+            - containerPort: 18083
+          resources:
+            requests:
+              memory: "256Mi"  # 256Mi memory requested for EMQX
+              cpu: "250m"       # 0.25 CPU core requested for EMQX
+            limits:
+              memory: "1024Mi"  # 1Gi memory limit for EMQX
+              cpu: "1000m"      # 1 CPU core limit for EMQX

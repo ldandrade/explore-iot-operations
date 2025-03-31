@@ -22,19 +22,21 @@ RUN wget https://github.com/derailed/k9s/releases/download/v0.28.0/k9s_Linux_amd
     chmod +x /usr/local/bin/k9s && \
     rm -rf k9s_Linux_amd64.tar.gz
 
-# Install and configure EMQx
-RUN wget https://www.emqx.com/en/downloads/broker/5.8.6/emqx-5.8.6-ubuntu24.04-amd64.tar.gz && \
-    tar -xzf emqx-5.8.6-ubuntu24.04-amd64.tar.gz -C /opt/ && \
-    rm emqx-5.8.6-ubuntu24.04-amd64.tar.gz
+# Install EMQX
+# RUN wget https://www.emqx.com/en/downloads/broker/v5.0.25/emqx-5.0.25-linux-x86_64.tar.gz && \
+    # mkdir -p /opt/emqx && \
+    # tar -xzf emqx-5.0.25-linux-x86_64.tar.gz -C /opt/emqx --strip-components=1 && \
+    # rm emqx-5.0.25-linux-x86_64.tar.gz
 
-ENV EMQX_HOME=/opt/emqx
-ENV PATH="$EMQX_HOME/bin:$PATH"
+
+# ENV EMQX_HOME=/opt/emqx
+# ENV PATH="$EMQX_HOME/bin:$PATH"
 
 # Copy EMQx bridge config for Azure IoT Operations
 # COPY emqx_bridge.conf /opt/emqx/etc/emqx_bridge.conf
 
 # Expose necessary ports (avoid 1883 to prevent conflict)
-EXPOSE 1884 8883 8083 8084 18083
+# EXPOSE 1884 8883 8083 8084 18083
 
 # Start EMQx
-CMD ["/opt/emqx/bin/emqx", "start"]
+# CMD ["/opt/emqx/bin/emqx", "start"]
