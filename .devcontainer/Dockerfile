@@ -31,7 +31,7 @@ ENV EMQX_HOME=/opt/emqx
 ENV PATH="$EMQX_HOME/bin:$PATH"
 
 # Copy EMQx bridge config for Azure IoT Operations
-COPY emqx_bridge.conf /opt/emqx/etc/emqx_bridge.conf
+# COPY emqx_bridge.conf /opt/emqx/etc/emqx_bridge.conf
 
 # Expose necessary ports (avoid 1883 to prevent conflict)
 EXPOSE 1884 8883 8083 8084 18083
