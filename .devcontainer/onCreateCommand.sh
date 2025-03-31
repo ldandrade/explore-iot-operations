@@ -19,7 +19,7 @@ fi
 k3d cluster delete || echo "No cluster found to delete"
 
 # Create the cluster with corrected port mappings
-k3d cluster create "$CLUSTER_NAME" \
+k3d cluster create \
 -p "1883:1883@loadbalancer" \  # AIO MQTT Broker
 -p "8883:8883@loadbalancer" \  # AIO Secure MQTT Broker
 -p "1884:1884@loadbalancer" \  # EMQX MQTT Broker (NEW)
