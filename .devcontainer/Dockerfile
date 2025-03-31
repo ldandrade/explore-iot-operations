@@ -23,9 +23,9 @@ RUN wget https://github.com/derailed/k9s/releases/download/v0.28.0/k9s_Linux_amd
     rm -rf k9s_Linux_amd64.tar.gz
 
 # Install and configure EMQx
-RUN wget https://www.emqx.com/en/downloads/broker/5.0/emqx-5.0.25-linux-x86_64.tar.gz && \
-    tar -xzf emqx-5.0.25-linux-x86_64.tar.gz -C /opt/ && \
-    rm emqx-5.0.25-linux-x86_64.tar.gz
+RUN wget https://www.emqx.com/en/downloads/broker/5.8.6/emqx-5.8.6-ubuntu24.04-amd64.tar.gz && \
+    tar -xzf emqx-5.8.6-ubuntu24.04-amd64.tar.gz -C /opt/ && \
+    rm emqx-5.8.6-ubuntu24.04-amd64.tar.gz
 
 ENV EMQX_HOME=/opt/emqx
 ENV PATH="$EMQX_HOME/bin:$PATH"
