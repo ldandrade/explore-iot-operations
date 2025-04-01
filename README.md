@@ -1,25 +1,23 @@
 # Explore IoT Operations
 
-This repo is the source of tools, samples, tutorials, and other resources for customers of Azure IoT Operations.
+This further extends the [Explore IoT Operations](https://github.com/Azure-Samples/explore-iot-operations) repo to evaluate integration capabilities with other IoT Platforms such as EMQx.
 
 ## Features
 
 This project provides the following:
 
 * Pre-configured codespace with [K3s](https://k3s.io/) cluster via [K3d](https://k3d.io/)
-* MQTT Device Simulator
+* EMQX MQTT Broker running as a pod within K3D
+* AIO MQTT Broker running as a pod within K3D
+* MQTT Bridge configured from EMQX to AIO for message forwarding
+* MQTT Device Simulator for publishing and subscribing to topics
 * HTTP & GRPC Callout Server
-
-> [!IMPORTANT]
-> Codespaces are easy to setup quickly and tear down later, but they're not suitable for performance evaluation or scale testing. For those scenarios, use a validated environment from the official documentation.
->
-> Azure IoT Operations is currently in preview and not recommended for production use no matter the environment.
 
 ## Getting Started
 
 1. Use this GitHub codespace to explore Azure IoT Operations in your browser without installing anything on your local machine.
 
-   [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/Azure-Samples/explore-iot-operations?quickstart=1)
+   [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/ldandrade/explore-iot-operations?quickstart=1)
 
 1. (Optional) Enter your Azure details to store them as environment variables inside the codespace.
 
@@ -33,13 +31,25 @@ This project provides the following:
    az connectedk8s connect -n $CLUSTER_NAME -g $RESOURCE_GROUP -l $LOCATION
    ```
 
-2. Follow [Azure IoT Operations docs](https://learn.microsoft.com/azure/iot-operations/get-started/quickstart-deploy?tabs=codespaces) to finish deploying.
+1. Follow [Azure IoT Operations docs](https://learn.microsoft.com/azure/iot-operations/get-started/quickstart-deploy?tabs=codespaces) to finish deploying.
 
-3. Explore!
+1. Run the following commands inside Codespaces to deploy EMQX:
+   ```bash
+   kubectl apply -f k8s/emqx/emqx-deployment.yaml
+   kubectl apply -f k8s/emqx/emqx-service.yaml
+   ```
 
-## Contributing
+1. Check that EMQX is running:
+   ```bash
+   kubectl get pods -l app=emqx
+   kubectl get svc emqx-service
+   ```
 
-Please view the developer guides in the docs directory to get started with contributions. Get started with the [Organization docs](./docs/ORGANIZATION.md) and [Code of Conduct](CODE_OF_CONDUCT.md).
+1. Port-forward the EMQX Dashboard by running the following command:
+   ```bash
+   kubectl port-forward <emqx-pod-name> 18083:18083
+   ```
+
 
 ## Trademark Notice
 
