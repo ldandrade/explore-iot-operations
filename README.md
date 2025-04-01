@@ -15,11 +15,13 @@ This project provides the following:
 
 ## Getting Started
 
-1. Use this GitHub codespace to explore Azure IoT Operations in your browser without installing anything on your local machine.
+Use this GitHub codespace to explore Azure IoT Operations in your browser without installing anything on your local machine.
 
    [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/ldandrade/explore-iot-operations?quickstart=1)
 
-1. (Optional) Enter your Azure details to store them as environment variables inside the codespace.
+(Optional) Enter your Azure details to store them as environment variables inside the codespace.
+
+### Azure IoT Operations Setup
 
 1. **Important**: Open the codespace in VS Code Desktop with **Ctrl/Cmd + Shift + P** > **Codespaces: Open in VS Code Desktop**. This is required to login to Azure CLI properly.
 
@@ -31,7 +33,20 @@ This project provides the following:
    az connectedk8s connect -n $CLUSTER_NAME -g $RESOURCE_GROUP -l $LOCATION
    ```
 
-1. Follow [Azure IoT Operations docs](https://learn.microsoft.com/azure/iot-operations/get-started/quickstart-deploy?tabs=codespaces) to finish deploying.
+1. Arc Connect your K3S/K3D Cluster by running the arcConnect shell script:
+
+   ```bash
+   az login
+   ```
+
+1. Deploy Azure IoT Operations by running the iotopsQuickstart sheel script:
+
+   ```bash
+   az login
+   ```
+1. For more detailed information follow [Azure IoT Operations docs](https://learn.microsoft.com/azure/iot-operations/get-started/quickstart-deploy?tabs=codespaces).
+
+### EMQX Setup
 
 1. Run the following commands inside Codespaces to deploy EMQX:
    ```bash
@@ -47,9 +62,39 @@ This project provides the following:
 
 1. Port-forward the EMQX Dashboard by running the following command:
    ```bash
-   kubectl port-forward <emqx-pod-name> 18083:18083
+   kubectl port-forward <emqx-pod-name> 18083:18083 &
    ```
 
+### MQTT Bridge Configuration
+
+This repository considers Azure IoT Operations as the sink MQTT service, thus having EMQX MQTT Broker as one of the possible sources of messages. A detailed explanation can be seen in the EMQX documentation page: [Bridge with Other MQTT Services](https://docs.emqx.com/en/emqx/latest/data-integration/data-bridge-mqtt.html#how-it-works)
+
+![alt text](image.png)
+
+#### Using EMQX Dashboard
+
+1. Open the EMQX Dashboard and go to the Connectors page.
+
+   ![alt text](image-1.png)
+
+2. Click on Create and select MQTT Broker
+
+   ![alt text](image-2.png)
+
+3. Fill the form with the following information:
+
+   * Connector Name:
+   * Description:
+   * MQTT Broker:
+   * ClientID Prefix:
+   * Username:
+   * Password:
+   * MQTT Version:
+   * Enable TLS:
+   
+   ![alt text](image-3.png)
+
+4. Click Create.
 
 ## Trademark Notice
 
