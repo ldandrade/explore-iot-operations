@@ -48,6 +48,25 @@ Use this GitHub codespace to explore Azure IoT Operations in your browser withou
 
 1. For detailed information refer to [Azure IoT Operations docs](https://learn.microsoft.com/azure/iot-operations/get-started/quickstart-deploy?tabs=codespaces).
 
+1. Once Azure IoT Operations is deployed, you can access the Operations Experience Web UI.
+
+   To sign in to the operations experience web UI, you need a Microsoft Entra ID account with at least contributor permissions for the **resource group** that contains your Kubernetes - Azure Arc instance. 
+
+   > Note: You can't sign in with a Microsoft account (MSA). 
+
+   To create a suitable Microsoft Entra ID account in your Azure tenant:
+
+   * Sign in to the Azure portal with the same tenant and user name that you used to deploy Azure IoT Operations.
+   * In the Azure portal, go to the Microsoft Entra ID section, select Users > +New user > Create new user. Create a new user and make a note of the password, you need it to sign in later.
+   * In the Azure portal, go to the resource group that contains your Kubernetes - Azure Arc instance. On the Access control (IAM) page, select +Add > Add role assignment.
+   * On the Add role assignment page, select Privileged administrator roles. Then select Contributor and then select Next.
+   * On the Members page, add your new user to the role.
+   * Select Review and assign to complete setting up the new user.
+
+   You can now use the new user account to sign in to the Azure IoT Operations portal.
+
+   You can continue this thread following the documentation on [Manage asset configurations remotely](https://learn.microsoft.com/en-us/azure/iot-operations/discover-manage-assets/howto-manage-assets-remotely?tabs=portal).
+
 ### EMQX Setup
 
 1. Run the following commands inside Codespaces to deploy EMQX:
