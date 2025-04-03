@@ -30,21 +30,23 @@ Use this GitHub codespace to explore Azure IoT Operations in your browser withou
    ```bash
    az login
    az account set -s $SUBSCRIPTION_ID
-   az connectedk8s connect -n $CLUSTER_NAME -g $RESOURCE_GROUP -l $LOCATION
    ```
 
 1. Arc Connect your K3S/K3D Cluster by running the arcConnect shell script:
 
    ```bash
-   az login
+   ./scripts/arcConnect.sh
    ```
 
-1. Deploy Azure IoT Operations by running the iotopsQuickstart sheel script:
+1. Deploy Azure IoT Operations by running the iotopsQuickstart shell script:
 
    ```bash
-   az login
+   ./scripts/iotopsQuickstart.sh
    ```
-1. For more detailed information follow [Azure IoT Operations docs](https://learn.microsoft.com/azure/iot-operations/get-started/quickstart-deploy?tabs=codespaces).
+   
+   > **Note:** You may need to run chmod in VS Code Codespaces terminal to allow the execution of the shell script.
+
+1. For detailed information refer to [Azure IoT Operations docs](https://learn.microsoft.com/azure/iot-operations/get-started/quickstart-deploy?tabs=codespaces).
 
 ### EMQX Setup
 
