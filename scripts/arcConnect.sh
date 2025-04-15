@@ -1,129 +1,72 @@
 #!/bin/bash
 
+set -o errexit
+set -o nounset
+set -o pipefail
+
 # Function to print in green
 print_green() {
     echo -e "\033[32m$1\033[0m"
 }
 
+echo -e "\n--- [arcConnect.sh] Starting Azure Arc connection setup ---"
 
-# Fetch the currently active subscription
-echo -e "\nFetching the currently active subscription..."
-CURRENT_SUBSCRIPTION=$(az account show --query "name" -o tsv 2>/dev/null)
-if [ -z "$CURRENT_SUBSCRIPTION" ]; then
-    echo -e "\nError: Failed to fetch the currently active Azure subscription. Please run 'az login' to set up an account.\n"
+# Ensure Azure CLI is logged in
+if ! az account show &>/dev/null; then
+    echo -e "\nError: Azure CLI is not logged in. Run 'az login' manually or use a credentialed Codespace."
     exit 1
 fi
 
-echo -e "\n"
-read -p "Is \"$(print_green "$CURRENT_SUBSCRIPTION")\" the right subscription to use? (y/n): " RESPONSE
-echo -e "\n"
+# Set Azure subscription (if not already)
+CURRENT_SUBSCRIPTION=$(az account show --query id -o tsv)
+if [[ "$CURRENT_SUBSCRIPTION" != "$SUBSCRIPTION_ID" ]]; then
+    echo "Setting Azure subscription to: $SUBSCRIPTION_ID"
+    az account set --subscription "$SUBSCRIPTION_ID"
+fi
 
-if [[ "$RESPONSE" != "y" ]]; then
-    echo -e "Please use 'az account set' command to set the right subscription and then rerun the script.\n"
+# Validate location
+SUPPORTED_LOCATIONS=("eastus" "eastus2" "westus2" "westus3" "westeurope" "northeurope")
+if [[ ! " ${SUPPORTED_LOCATIONS[*]} " =~ " ${LOCATION} " ]]; then
+    echo -e "\nError: Location $LOCATION is not in the supported list: ${SUPPORTED_LOCATIONS[*]}"
     exit 1
 fi
 
-# Default values
-DEFAULT_LOCATION="westus2"
-DEFAULT_RESOURCE_GROUP="$CODESPACE_NAME"
-CLUSTER_NAME="iotops-quickstart-cluster"
-SUPPORTED_LOCATIONS=("eastus" "eastus2" "westus2" "westus" "westeurope" "northeurope")
-
-# Ask the user if they want to provide their own values
-echo -e "\n"
-read -p "Do you want to provide your own values for location and resource group? (y/n): " CUSTOM_VALUES
-echo -e "\n"
-
-if [[ "$CUSTOM_VALUES" == "y" ]]; then
-    # User provides their own values
-    while true; do
-        read -p "Enter the resource group name: " RESOURCE_GROUP
-        
-        # Check if the provided resource group exists
-        echo -e "\nChecking if the resource group $RESOURCE_GROUP exists..."
-        az group show --name $RESOURCE_GROUP &> /dev/null
-        if [ $? -eq 0 ]; then
-            # Resource group exists, check if it's in a supported location
-            echo -e "\nChecking the location of the resource group $RESOURCE_GROUP..."
-            RG_LOCATION=$(az group show --name $RESOURCE_GROUP --query "location" -o tsv)
-            if [[ " ${SUPPORTED_LOCATIONS[@]} " =~ " ${RG_LOCATION} " ]]; then
-                LOCATION=$RG_LOCATION
-                break
-            else
-                echo -e "\nError: The resource group $RESOURCE_GROUP exists but is not in a supported location. Supported locations are: ${SUPPORTED_LOCATIONS[*]}.\n"
-                read -p "Do you want to specify a different resource group and location? (y/n): " TRY_AGAIN
-                if [[ "$TRY_AGAIN" != "y" ]]; then
-                    exit 1
-                fi
-            fi
-        else
-            # Resource group does not exist, ask for location and create it
-            while true; do
-                read -p "Enter the location (Supported: eastus, eastus2, westus2, westus3): " LOCATION
-                if [[ " ${SUPPORTED_LOCATIONS[@]} " =~ " ${LOCATION} " ]]; then
-                    break
-                else
-                    echo -e "\nError: The location $LOCATION is not supported. Please choose from eastus, eastus2, westus2, or westus3.\n"
-                fi
-            done
-            echo -e "\nCreating resource group $RESOURCE_GROUP in location $LOCATION..."
-            az group create --name $RESOURCE_GROUP --location $LOCATION --output table
-            if [ $? -ne 0 ]; then
-                echo -e "\nError: Failed to create the resource group.\n"
-                exit 1
-            fi
-            break
-        fi
-    done
+# Ensure resource group exists
+if ! az group show --name "$RESOURCE_GROUP" &>/dev/null; then
+    echo "Creating resource group: $RESOURCE_GROUP in $LOCATION"
+    az group create --name "$RESOURCE_GROUP" --location "$LOCATION" --output table
 else
-    # User chooses to use default values
-    RESOURCE_GROUP=$DEFAULT_RESOURCE_GROUP
-    LOCATION=$DEFAULT_LOCATION
-    
-    # Check if the default resource group exists and create it if it doesn’t
-    echo -e "\nChecking if the default resource group $RESOURCE_GROUP exists..."
-    az group show --name $RESOURCE_GROUP &> /dev/null
-    if [ $? -ne 0 ]; then
-        echo -e "\nCreating default resource group $RESOURCE_GROUP in location $LOCATION..."
-        az group create --name $RESOURCE_GROUP --location $LOCATION --output table
-        if [ $? -ne 0 ]; then
-            echo -e "\nError: Failed to create the default resource group.\n"
-            exit 1
-        fi
-    fi
-fi
-# Add the connectedk8s extension
-echo -e "\nAdding the connectedk8s extension..."
-az extension add --name connectedk8s
-if [ $? -ne 0 ]; then
-    echo -e "\nError: Failed to add the connectedk8s extension.\n"
-    exit 1
+    echo "Using existing resource group: $RESOURCE_GROUP"
 fi
 
-# Connect the Kubernetes cluster to Azure Arc
-echo -e "\nConnecting the Kubernetes cluster to Azure Arc..."
-az connectedk8s connect --name $CLUSTER_NAME --resource-group $RESOURCE_GROUP
-if [ $? -ne 0 ]; then
-    echo -e "\nError: Failed to connect the Kubernetes cluster to Azure Arc.\n"
-    exit 1
-else
-  
-    # After the connection to Azure Arc
-    echo -e "\nTo manually export the cluster name and resource group for later use, run the following commands in your terminal:\n"
-    echo -e "$(print_green "export CLUSTER_NAME=$CLUSTER_NAME")"
-    echo -e "$(print_green "export RESOURCE_GROUP=$RESOURCE_GROUP")"
+# Set cluster name
+CLUSTER_NAME="${CLUSTER_NAME:-iotops-quickstart-cluster}"
 
-    # Determine the directory of the script
-    SCRIPT_DIR="$(dirname "$0")"
+# Check if cluster is already connected
+if az connectedk8s show --name "$CLUSTER_NAME" --resource-group "$RESOURCE_GROUP" &>/dev/null; then
+    echo "Cluster '$CLUSTER_NAME' is already connected to Azure Arc."
+    exit 0
+fi
 
-    echo -e "\nSaving environment variables for reference...\n"
-    cat <<EOL > $SCRIPT_DIR/env_vars.txt
+# Add Azure Arc extension if not present
+if ! az extension show --name connectedk8s &>/dev/null; then
+    echo "Installing Azure CLI extension: connectedk8s"
+    az extension add --name connectedk8s
+fi
+
+# Connect to Azure Arc
+echo "Connecting Kubernetes cluster '$CLUSTER_NAME' to Azure Arc..."
+az connectedk8s connect --name "$CLUSTER_NAME" --resource-group "$RESOURCE_GROUP"
+
+# Output environment vars
+SCRIPT_DIR="$(dirname "$0")"
+echo "Saving connection environment variables to $SCRIPT_DIR/env_vars.txt"
+
+cat <<EOL > "$SCRIPT_DIR/env_vars.txt"
 export CLUSTER_NAME=$CLUSTER_NAME
 export RESOURCE_GROUP=$RESOURCE_GROUP
+export LOCATION=$LOCATION
 EOL
 
-    echo -e "A file named $(print_green "env_vars.txt") has been created with environment variables above..."
-    echo -e "\nTo set the environment variables, run:"
-    echo -e "\033[32msource $SCRIPT_DIR/env_vars.txt\033[0m"
-
-fi
+echo -e "\n✅ Azure Arc connection complete."
+echo -e "Run \033[32msource $SCRIPT_DIR/env_vars.txt\033[0m to re-export environment variables later."
