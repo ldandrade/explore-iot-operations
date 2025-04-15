@@ -14,7 +14,7 @@ echo -e "Environment: \nSUBSCRIPTION_ID: $SUBSCRIPTION_ID \nRESOURCE_GROUP: $RES
 # Run arcConnect.sh if not already connected
 if ! az connectedk8s show --name "$CLUSTER_NAME" --resource-group "$RESOURCE_GROUP" &>/dev/null; then
   echo "Running arcConnect.sh..."
-  bash .devcontainer/arcConnect.sh >> ~/arcConnect.log 2>&1
+  bash .devcontainer/arcConnect.sh
 else
   echo "Cluster '$CLUSTER_NAME' already connected to Azure Arc."
 fi
