@@ -14,7 +14,7 @@ echo -e "Environment: \nSUBSCRIPTION_ID: $SUBSCRIPTION_ID \nRESOURCE_GROUP: $RES
 # Run arcConnect.sh if not already connected
 if ! az connectedk8s show --name "$CLUSTER_NAME" --resource-group "$RESOURCE_GROUP" &>/dev/null; then
   echo "Running arcConnect.sh..."
-  bash .devcontainer/arcConnect.sh
+  bash ./scripts/arcConnect.sh
 else
   echo "Cluster '$CLUSTER_NAME' already connected to Azure Arc."
 fi
@@ -25,6 +25,6 @@ if az iot ops show --cluster "$CLUSTER_NAME" --resource-group "$RESOURCE_GROUP" 
   echo "IoT Ops already fully provisioned (Azure + Kubernetes) for Cluster "$CLUSTER_NAME""
 else
   echo "Running iotopsQuickstart.sh..."
-  bash .devcontainer/iotopsQuickstart.sh
+  bash .scripts/iotopsQuickstart.sh
 fi
 
