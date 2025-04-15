@@ -20,9 +20,11 @@ else
 fi
 
 # Run iotopsQuickstart.sh if needed (e.g., missing namespace or deployment)
-if ! kubectl get ns azure-iot-operations &>/dev/null; then
-  echo "Running iotopsQuickstart.sh..."
-  bash .devcontainer/iotopsQuickstart.sh >> ~/iotopsQuickstart.log 2>&1
+if az iot ops show --cluster "$CLUSTER_NAME" --resource-group "$RESOURCE_GROUP" &>/dev/null && \
+   kubectl get ns azure-iot-operations &>/dev/null; then
+  echo "IoT Ops already fully provisioned (Azure + Kubernetes) for Cluster "$CLUSTER_NAME""
 else
-  echo "Azure IoT Operations already deployed."
+  echo "Running iotopsQuickstart.sh..."
+  bash .devcontainer/iotopsQuickstart.sh
 fi
+
