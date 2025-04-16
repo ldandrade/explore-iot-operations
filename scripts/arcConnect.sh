@@ -11,7 +11,7 @@ print_green() {
 
 echo -e "\n--- [arcConnect.sh] Starting Azure Arc connection setup ---"
 
-az login --identity
+az login --service-principal --username $CLIENT_ID --password $CLIENT_SECRET --tenant $TENANT_ID
 
 # Ensure Azure CLI is logged in
 if ! az account show &>/dev/null; then

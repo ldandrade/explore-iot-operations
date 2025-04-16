@@ -19,7 +19,7 @@ for var in SUBSCRIPTION_ID RESOURCE_GROUP LOCATION CLUSTER_NAME; do
   fi
 done
 
-az login --identity
+az login --service-principal --username $CLIENT_ID --password $CLIENT_SECRET --tenant $TENANT_ID
 
 # Set subscription
 az account set --subscription "$SUBSCRIPTION_ID"
