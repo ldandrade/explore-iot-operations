@@ -11,6 +11,10 @@ source ~/.bashrc
 
 echo -e "Environment: \nSUBSCRIPTION_ID: $SUBSCRIPTION_ID \nRESOURCE_GROUP: $RESOURCE_GROUP \nLOCATION: $LOCATION \nCLUSTER_NAME: $CLUSTER_NAME"
 
+az login --identity
+
+az account set --subscription "$SUBSCRIPTION_ID"
+
 # Run arcConnect.sh if not already connected
 if ! az connectedk8s show --name "$CLUSTER_NAME" --resource-group "$RESOURCE_GROUP" &>/dev/null; then
   echo "Running arcConnect.sh..."

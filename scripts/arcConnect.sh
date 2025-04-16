@@ -11,6 +11,8 @@ print_green() {
 
 echo -e "\n--- [arcConnect.sh] Starting Azure Arc connection setup ---"
 
+az login --identity
+
 # Ensure Azure CLI is logged in
 if ! az account show &>/dev/null; then
     echo -e "\nError: Azure CLI is not logged in. Run 'az login' manually or use a credentialed Codespace."

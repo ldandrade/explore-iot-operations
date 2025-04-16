@@ -19,6 +19,8 @@ for var in SUBSCRIPTION_ID RESOURCE_GROUP LOCATION CLUSTER_NAME; do
   fi
 done
 
+az login --identity
+
 # Set subscription
 az account set --subscription "$SUBSCRIPTION_ID"
 
