@@ -29,6 +29,6 @@ if az iot ops show --cluster "$CLUSTER_NAME" --resource-group "$RESOURCE_GROUP" 
   echo "IoT Ops already fully provisioned (Azure + Kubernetes) for Cluster "$CLUSTER_NAME""
 else
   echo "Running iotopsQuickstart.sh..."
-  bash .scripts/iotopsQuickstart.sh
+  bash ./scripts/iotopsQuickstart.sh
 fi
 
