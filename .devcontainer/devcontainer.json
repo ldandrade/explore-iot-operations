@@ -28,6 +28,19 @@
     "LOCATION": {
       "description": "Region to use, must be one of eastus, eastus2, westus, westus2, westus3, westeurope, or northeurope.",
       "documentationUrl": "https://learn.microsoft.com/azure/iot-operations/deploy-iot-ops/howto-prepare-cluster"
+    },
+    "CLUSTER_NAME": {
+      "description": "Your Kubernetes cluster name."
+    },
+    "CLIENT_ID": {
+      "description": "Your Azure Service Principal's Client ID",
+      "documentationUrl": "https://learn.microsoft.com/azure/active-directory/develop/howto-create-service-principal-portal"
+    },
+    "CLIENT_SECRET": {
+      "description": "Your Azure Service Principal's Client Secret"
+    },
+    "TENANT_ID": {
+      "description": "Your Azure Tenant ID"
     }
   },
   "containerEnv": {
