@@ -38,6 +38,8 @@ Use this GitHub codespace to explore Azure IoT Operations in your browser withou
    ./scripts/arcConnect.sh
    ```
 
+   > **Note:** the script will ask if you want to provide custom values for location and resource group. If the answer is no, the script will name the resource group after the Codespaces instance name and create all resources in West US 2 region.
+
 1. Deploy Azure IoT Operations by running the iotopsQuickstart shell script:
 
    ```bash
@@ -45,6 +47,8 @@ Use this GitHub codespace to explore Azure IoT Operations in your browser withou
    ```
    
    > **Note:** You may need to run chmod in VS Code Codespaces terminal to allow the execution of the shell script.
+
+   > **Note:** the script will ask if you want to provide custom values for location and resource group. If the answer is no, the script will name the resource group after the Codespaces instance name and create all resources in West US 2 region.
 
 1. For detailed information refer to [Azure IoT Operations docs](https://learn.microsoft.com/azure/iot-operations/get-started/quickstart-deploy?tabs=codespaces).
 
@@ -104,9 +108,9 @@ This repository considers Azure IoT Operations as the sink MQTT service, thus ha
 
 3. Fill the form with the following information:
 
-   * Connector Name:
-   * Description:
-   * MQTT Broker:
+   * Connector Name: aio-bridge
+   * Description: Bridge to AIO MQTT Broker in K3D cluster
+   * MQTT Broker: aio-broker.azure-iot-operations.svc.cluster.local:18883
    * ClientID Prefix:
    * Username:
    * Password:
